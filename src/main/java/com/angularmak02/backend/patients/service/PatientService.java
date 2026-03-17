@@ -4,6 +4,8 @@ import com.angularmak02.backend.patients.dto.PatientRequest;
 import com.angularmak02.backend.patients.dto.PatientResponse;
 import com.angularmak02.backend.patients.entity.Patient;
 import com.angularmak02.backend.patients.repository.PatientRepository;
+import com.angularmak02.backend.shared.exception.ResourceNotFoundException;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +28,9 @@ public class PatientService {
     }
 
     public PatientResponse findById(UUID id) {
-        Patient patient = patientRepository.findById(id).orElseThrow();
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrado"));
+
         return toResponse(patient);
     }
 
@@ -44,7 +48,7 @@ public class PatientService {
 
     public PatientResponse update(UUID id, PatientRequest request) {
         Patient patient = patientRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrado"));
 
         patient.setNome(request.nome());
         patient.setIdade(request.idade());
