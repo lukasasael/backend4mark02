@@ -1,4 +1,4 @@
-package com.angularmak02.backend.config;
+/*package com.angularmak02.backend.config;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -12,4 +12,4 @@ public class DataLoader implements CommandLineRunner {
     }
 
    
-}
+}*/
