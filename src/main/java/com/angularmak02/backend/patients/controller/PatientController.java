@@ -1,7 +1,11 @@
 package com.angularmak02.backend.patients.controller;
 
-import com.angularmak02.backend.patients.entity.Patient;
+import com.angularmak02.backend.patients.dto.PatientRequest;
+import com.angularmak02.backend.patients.dto.PatientResponse;
 import com.angularmak02.backend.patients.service.PatientService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,23 +23,22 @@ public class PatientController {
     }
 
     @GetMapping
-    public List<Patient> findAll() {
+    public List<PatientResponse> findAll() {
         return patientService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Patient findById(@PathVariable UUID id) {
+    public PatientResponse findById(@PathVariable UUID id) {
         return patientService.findById(id);
     }
 
     @PostMapping
-    public Patient create(@RequestBody Patient patient) {
-        return patientService.save(patient);
+    public PatientResponse create(@Valid @RequestBody PatientRequest request) {
+        return patientService.save(request);
     }
 
     @PutMapping("/{id}")
-    public Patient update(@PathVariable UUID id, @RequestBody Patient patient) {
-        patient.setId(id);
-        return patientService.save(patient);
+    public PatientResponse update(@PathVariable UUID id, @Valid @RequestBody PatientRequest request) {
+        return patientService.update(id, request);
     }
 }

@@ -1,5 +1,7 @@
 package com.angularmak02.backend.patients.service;
 
+import com.angularmak02.backend.patients.dto.PatientRequest;
+import com.angularmak02.backend.patients.dto.PatientResponse;
 import com.angularmak02.backend.patients.entity.Patient;
 import com.angularmak02.backend.patients.repository.PatientRepository;
 import org.springframework.stereotype.Service;
@@ -16,16 +18,50 @@ public class PatientService {
         this.patientRepository = patientRepository;
     }
 
-    public List<Patient> findAll() {
-        return patientRepository.findAll();
+    public List<PatientResponse> findAll() {
+        return patientRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public Patient findById(UUID id) {
-        return patientRepository.findById(id)
+    public PatientResponse findById(UUID id) {
+        Patient patient = patientRepository.findById(id).orElseThrow();
+        return toResponse(patient);
+    }
+
+    public PatientResponse save(PatientRequest request) {
+        Patient patient = new Patient();
+
+        patient.setNome(request.nome());
+        patient.setIdade(request.idade());
+        patient.setPlanoTratamento(request.planoTratamento());
+        patient.setHistorico(request.historico());
+        patient.setDataInicio(request.dataInicio());
+
+        return toResponse(patientRepository.save(patient));
+    }
+
+    public PatientResponse update(UUID id, PatientRequest request) {
+        Patient patient = patientRepository.findById(id)
                 .orElseThrow();
+
+        patient.setNome(request.nome());
+        patient.setIdade(request.idade());
+        patient.setPlanoTratamento(request.planoTratamento());
+        patient.setHistorico(request.historico());
+        patient.setDataInicio(request.dataInicio());
+
+        return toResponse(patientRepository.save(patient));
     }
 
-    public Patient save(Patient patient) {
-        return patientRepository.save(patient);
+    private PatientResponse toResponse(Patient patient) {
+        return new PatientResponse(
+                patient.getId(),
+                patient.getNome(),
+                patient.getIdade(),
+                patient.getPlanoTratamento(),
+                patient.getHistorico(),
+                patient.getDataInicio());
     }
 }
