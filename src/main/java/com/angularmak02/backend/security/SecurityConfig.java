@@ -1,0 +1,54 @@
+package com.angularmak02.backend.security;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+import com.angularmak02.backend.users.entity.User;
+import com.angularmak02.backend.users.repository.UserRepository;
+
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .httpBasic(httpBasic -> {});
+
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    CommandLineRunner initUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    return args -> {
+        if (userRepository.findByEmail("admin@clinic.com").isEmpty()) {
+
+            User user = new User();
+            user.setName("Admin");
+            user.setEmail("admin@clinic.com");
+            user.setPassword(passwordEncoder.encode("123456"));
+            user.setRole("ROLE_USER");
+
+            userRepository.save(user);
+        }
+    };
+}
+}
