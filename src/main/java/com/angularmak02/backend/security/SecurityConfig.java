@@ -3,17 +3,26 @@ package com.angularmak02.backend.security;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.angularmak02.backend.users.entity.User;
 import com.angularmak02.backend.users.repository.UserRepository;
 
 @Configuration
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -26,7 +35,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .httpBasic(httpBasic -> {});
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -37,18 +46,26 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration configuration
+    ) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
     CommandLineRunner initUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-    return args -> {
-        if (userRepository.findByEmail("admin@clinic.com").isEmpty()) {
+        return args -> {
+            if (userRepository.findByEmail("admin@clinic.com").isEmpty()) {
 
-            User user = new User();
-            user.setName("Admin");
-            user.setEmail("admin@clinic.com");
-            user.setPassword(passwordEncoder.encode("123456"));
-            user.setRole("ROLE_USER");
+                User user = new User();
+                user.setName("Admin");
+                user.setEmail("admin@clinic.com");
+                user.setPassword(passwordEncoder.encode("123456"));
+                user.setRole("ROLE_USER");
 
-            userRepository.save(user);
-        }
-    };
-}
+                userRepository.save(user);
+            }
+        };
+    }
+    
 }
