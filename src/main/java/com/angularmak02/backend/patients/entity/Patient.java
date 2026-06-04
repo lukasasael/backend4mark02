@@ -20,6 +20,7 @@ public class Patient {
     private String planoTratamento;
     private String historico;
     private LocalDate dataInicio;
+    private String profileImageKey;
 
     public Patient() {
     }
@@ -70,5 +71,13 @@ public class Patient {
 
     public void setDataInicio(LocalDate dataInicio) {
         this.dataInicio = dataInicio;
+    }
+
+    public String getProfileImageKey() {
+        return profileImageKey;
+    }
+
+    public void setProfileImageKey(String profileImageKey) {
+        this.profileImageKey = profileImageKey;
     }
 }

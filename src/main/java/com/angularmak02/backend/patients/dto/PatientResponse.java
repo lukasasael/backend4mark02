@@ -9,5 +9,6 @@ public record PatientResponse(
     Integer idade,
     String planoTratamento,
     String historico,
-    LocalDate dataInicio
+    LocalDate dataInicio,
+    String profileImageKey
 ) {}

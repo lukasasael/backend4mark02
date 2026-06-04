@@ -7,6 +7,7 @@ import com.angularmak02.backend.patients.service.PatientService;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,5 +41,13 @@ public class PatientController {
     @PutMapping("/{id}")
     public PatientResponse update(@PathVariable UUID id, @Valid @RequestBody PatientRequest request) {
         return patientService.update(id, request);
+    }
+
+    @PostMapping("/{id}/photo")
+    public PatientResponse uploadPhoto(
+            @PathVariable UUID id,
+            @RequestParam("file") MultipartFile file) throws java.io.IOException {
+
+        return patientService.uploadPhoto(id, file);
     }
 }
